@@ -9,4 +9,6 @@ import java.util.UUID;
 
 public interface TransactionEntityRepository extends CrudRepository<TransactionEntity, UUID> {
     List<TransactionEntity> findAllByCategory(Category category);
+
+    List<TransactionEntity> findAll();
 }

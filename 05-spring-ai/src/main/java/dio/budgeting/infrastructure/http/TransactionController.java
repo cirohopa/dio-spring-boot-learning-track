@@ -14,6 +14,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import dio.budgeting.application.CalculateTotalExpensesUseCase;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -24,6 +25,7 @@ import java.util.List;
 public class TransactionController {
     private final PersistTransactionUseCase persistTransactionUseCase;
     private final ListTransactionsByCategoryUseCase listTransactionsByCategoryUseCase;
+    private final CalculateTotalExpensesUseCase calculateTotalExpensesUseCase;
 
     private final TranscriptionModel transcriptionModel;
     private final ChatClient chatClient;
@@ -31,16 +33,18 @@ public class TransactionController {
 
     public TransactionController(PersistTransactionUseCase persistTransactionUseCase,
                                  ListTransactionsByCategoryUseCase listTransactionsByCategoryUseCase,
+                                 CalculateTotalExpensesUseCase calculateTotalExpensesUseCase,
                                  TranscriptionModel transcriptionModel,
                                  @Value("classpath:prompts/system-message.st") Resource systemPrompt,
                                  ChatClient.Builder chatClientBuilder,
                                  TextToSpeechModel textToSpeechModel) throws IOException {
         this.persistTransactionUseCase = persistTransactionUseCase;
         this.listTransactionsByCategoryUseCase = listTransactionsByCategoryUseCase;
+        this.calculateTotalExpensesUseCase = calculateTotalExpensesUseCase;
         this.transcriptionModel = transcriptionModel;
         this.chatClient = chatClientBuilder
                 .defaultSystem(systemPrompt.getContentAsString(Charset.defaultCharset()))
-                .defaultTools(persistTransactionUseCase, listTransactionsByCategoryUseCase)
+                .defaultTools(persistTransactionUseCase, listTransactionsByCategoryUseCase, calculateTotalExpensesUseCase)
                 .build();
         this.textToSpeechModel = textToSpeechModel;
     }
